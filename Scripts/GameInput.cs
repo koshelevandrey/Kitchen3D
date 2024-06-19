@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour {
     public event EventHandler OnInteractAction;
+    public event EventHandler OnInteractAlternateAction;
 
     private PlayerInputActions playerInputActions;
 
@@ -15,6 +16,7 @@ public class GameInput : MonoBehaviour {
 
         // Subscribe to interact button press
         playerInputActions.Player.Interact.performed += InteractOnPerformed;
+        playerInputActions.Player.InteractAlternate.performed += InteractAlternateOnPerformed;
     }
 
     private void InteractOnPerformed(InputAction.CallbackContext obj) {
@@ -25,6 +27,10 @@ public class GameInput : MonoBehaviour {
 
         // Same as above but shorter:
         // OnInteractAction?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void InteractAlternateOnPerformed(InputAction.CallbackContext obj) {
+        OnInteractAlternateAction?.Invoke(this, EventArgs.Empty);
     }
 
     public Vector2 GetMovementVectorNormalized() {

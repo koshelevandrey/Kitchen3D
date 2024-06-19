@@ -33,6 +33,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent {
     private void Start() {
         // Subscribe to interact event
         gameInput.OnInteractAction += GameInputOnInteractAction;
+        gameInput.OnInteractAlternateAction += GameInputOnInteractAlternateAction;
     }
 
     private void Update() {
@@ -43,6 +44,12 @@ public class Player : MonoBehaviour, IKitchenObjectParent {
     private void GameInputOnInteractAction(object sender, EventArgs e) {
         if (selectedCounter != null) {
             selectedCounter.Interact(this);
+        }
+    }
+
+    private void GameInputOnInteractAlternateAction(object sender, EventArgs e) {
+        if (selectedCounter != null) {
+            selectedCounter.InteractAlternate(this);
         }
     }
 
@@ -84,21 +91,27 @@ public class Player : MonoBehaviour, IKitchenObjectParent {
         float moveDistance = moveSpeed * Time.deltaTime;
         float playerRadius = 0.7f;
         float playerHeight = 2.0f;
-        bool canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight,
+
+        bool canMove = !Physics.CapsuleCast(transform.position,
+            transform.position + Vector3.up * playerHeight,
             playerRadius, moveDirection, moveDistance);
 
         // Check when can move only in X or Z axis
         if (!canMove) {
+            // Can move in X?
             Vector3 moveDirectionX = new Vector3(moveDirection.x, 0f, 0f).normalized;
-            canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight,
+            canMove = moveDirection.x != 0 && !Physics.CapsuleCast(transform.position,
+                transform.position + Vector3.up * playerHeight,
                 playerRadius, moveDirectionX, moveDistance);
 
             if (canMove) {
                 moveDirection = moveDirectionX;
             }
             else {
+                // Can move in Z?
                 Vector3 moveDirectionZ = new Vector3(0f, 0f, moveDirection.z).normalized;
-                canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight,
+                canMove = moveDirection.z != 0 && !Physics.CapsuleCast(transform.position,
+                    transform.position + Vector3.up * playerHeight,
                     playerRadius, moveDirectionZ, moveDistance);
 
                 if (canMove) {
